@@ -21,7 +21,7 @@ Permanently shadowed regions are mapped using digital terrain models from the Lu
 Results
 </h2>
 
-This repository contains Python files for single and double shadow mapping and subsequent analysis. Data files include the PSR and DPSR binary maps at various resolutions and shadow size-frequency distributions (.txt).
+This repository contains Python files for single and double shadow mapping and subsequent analysis. Data files include the PSR and DPSR binary maps at various resolutions in standard NumPy file format (.npy).
 
 <h2>
 Reference
