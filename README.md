@@ -21,7 +21,7 @@ Permanently shadowed regions are mapped using digital terrain models from the Lu
 Results
 </h2>
 
-This repository contains Python files for single and double shadow mapping and subsequent analysis. Data files include the PSR and DPSR binary maps at various resolutions in standard NumPy file format (.npy).
+This repository contains Python files for single and double shadow mapping and subsequent analysis. Data files include the PSR and DPSR binary maps at various resolutions in standard NumPy file format (.npy). "LPSR" files are PSR maps that cover the region from the pole down to 80 degrees latitude with pixel scale specified in the filename, e.g. "30M" = 30 m/pxl. "DPSR" files are DPSR maps that cover the region from the pole down to 85 degrees latitude except for the "5M" files which are high resolution 5 m/pxl maps that extend to 89 degrees latitude.
 
 <h2>
 Reference
