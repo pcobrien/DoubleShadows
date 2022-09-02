@@ -1,4 +1,5 @@
 # DoubleShadows
+<a href="https://zenodo.org/badge/latestdoi/530008101"><img src="https://zenodo.org/badge/530008101.svg" alt="DOI"></a>
 
 <h2>
 Background
