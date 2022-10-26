@@ -16,6 +16,7 @@ from shadow_funcs import *
 
 ar = "#AB0520"
 ab = "#0C234B"
+fs = 15
 
 cMap = c.ListedColormap([ar])
 cMapDouble = c.ListedColormap([ab])
@@ -44,16 +45,19 @@ min_lat = 85.0 * np.pi / 180.0
 R = 1737.4e3
 
 ########## ---------------------------------------------------------- ##########
-topo = readIMG(FILE_TOPO)
-grid_size = topo.shape[0]
+
+shadow = "LPSR"
+FILE_NORTH = glob("{}_*{}_{}M.npy".format(shadow, "N", int(resolution)))[0]
+FILE_SOUTH = glob("{}_*{}_{}M.npy".format(shadow, "S", int(resolution)))[0]
 
 north = np.load(FILE_NORTH)
-north = np.unpackbits(north, axis=None)[: topo.size].reshape(topo.shape).astype(bool)
+north = np.unpackbits(north, axis=None)
+north = north.reshape((round(np.sqrt(north.shape[0])), round(np.sqrt(north.shape[0])))).astype(int)
 
 south = np.load(FILE_SOUTH)
-south = np.unpackbits(south, axis=None)[: topo.size].reshape(topo.shape).astype(bool)
-
-del topo
+south = np.unpackbits(south, axis=None)
+south = south.reshape((round(np.sqrt(south.shape[0])), round(np.sqrt(south.shape[0])))).astype(int)
+grid_size = north.shape[0]
 
 ########## ---------------------------------------------------------- ##########
 area_deg = 90.0 - np.rad2deg(min_lat)
@@ -134,7 +138,7 @@ shadow_area_south_fit = 10 ** x_s
 cum_num_per_area_north_fit = a_n * (shadow_area_north_fit ** (-b_n))
 cum_num_per_area_south_fit = a_s * (shadow_area_south_fit ** (-b_s))
 
-fig = plt.figure(figsize=(6, 12))
+fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.scatter(
     shadow_area_north,
@@ -163,18 +167,12 @@ ax.plot(shadow_area_south_fit, cum_num_per_area_south_fit, c=ar, lw=3.0, zorder=
 ax.axvline(5.0 * (resolution ** 2) / (1.0e6), ls="--", color="k", alpha=0.666, zorder=1)
 ax.set_xscale("log")
 ax.set_yscale("log")
-ax.set_xlabel("Shadow Area ($km^2$)", fontsize=fs)
-ax.set_ylabel("Cumulative number of DPSRs ($km^{-2}$)", fontsize=fs)
+ax.set_xlabel("Shadow area ($km^2$)", fontsize=fs)
+ax.set_ylabel("Cumulative number of shadows ($km^{-2}$)", fontsize=fs)
 ax.tick_params(axis="both", which="both", direction="in", labelsize=fs)
 ax.tick_params(axis="both", which="major", length=10)
 ax.tick_params(axis="both", which="minor", length=5)
-ax.legend(
-    loc="best",
-    fancybox=True,
-    title="DPSRs $>85^{\circ}$ latitude",
-    fontsize=22,
-    title_fontsize=22,
-)
+ax.legend(loc="best", fancybox=True, fontsize=fs)
 
 locmaj = mticker.LogLocator(base=10.0, subs=(1.0,), numticks=100)
 ax.xaxis.set_major_locator(locmaj)
@@ -191,13 +189,14 @@ ax.yaxis.set_minor_locator(locmin)
 ax.yaxis.set_minor_formatter(mticker.NullFormatter())
 
 
-xmin = 1.0e-5
-xmax = 1.0e0
-ax.set_xlim(xmin, xmax)
+# xmin = 1.0e-5
+# xmax = 1.0e0
+# ax.set_xlim(xmin, xmax)
 
 d_eff = 2.0 * np.sqrt(shadow_area_total / np.pi) * 1000.0
+
 ax2 = ax.twiny()
-ax2.plot(d_eff, cum_num_per_area_north, lw=0, c=ab)
+ax2.plot(d_eff, cum_num_per_area_total, lw=0, c=ab)
 ax2.set_xlabel("Effective diameter ($m$)", fontsize=fs)
 ax2.set_xscale("log")
 ax2.set_yscale("log")
@@ -205,9 +204,9 @@ ax2.tick_params(axis="both", which="both", direction="in", labelsize=fs)
 ax2.tick_params(axis="both", which="major", length=10)
 ax2.tick_params(axis="both", which="minor", length=5)
 
-dmin = 2.0 * np.sqrt(xmin * (1.0e6) / np.pi)
-dmax = 2.0 * np.sqrt(xmax * (1.0e6) / np.pi)
-ax2.set_xlim(dmin, dmax)
+# dmin = 2.0 * np.sqrt(xmin * (1.0e6) / np.pi)
+# dmax = 2.0 * np.sqrt(xmax * (1.0e6) / np.pi)
+# ax2.set_xlim(dmin, dmax)
 
 locmaj = mticker.LogLocator(base=10.0, subs=(1.0,), numticks=100)
 ax2.xaxis.set_major_locator(locmaj)
@@ -215,6 +214,4 @@ ax2.xaxis.set_major_locator(locmaj)
 locmin = mticker.LogLocator(base=10.0, subs=np.arange(2, 10) * 0.1, numticks=100)
 ax2.xaxis.set_minor_locator(locmin)
 ax2.xaxis.set_minor_formatter(mticker.NullFormatter())
-
-plt.savefig(FILE_OUT, bbox_inches="tight", dpi=300)
 plt.show()
